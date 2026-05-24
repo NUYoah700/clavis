@@ -1,0 +1,15 @@
+{
+  "name": "compendium",
+  "version": "1.0.0",
+  "description": "Gallery-grade skills panel for Claude Code. Browse, search, favorite, and manage skills with warm gold-on-obsidian design. Auto-categorizes new skills. Includes Spotlight search, vault backup, and standalone vertical launcher.",
+  "author": "Compendium",
+  "license": "MIT",
+  "keywords": ["skills", "panel", "dashboard", "launcher", "management"],
+  "category": "productivity",
+  "skills": [
+    {
+      "name": "compendium",
+      "description": "Launch the Compendium skills panel at http://127.0.0.1:8765 — browse, search, favorite, and manage all Claude Code skills. Use when you want to discover skills, see what's available, organize your skill library, or find the right skill for a task."
+    }
+  ]
+}

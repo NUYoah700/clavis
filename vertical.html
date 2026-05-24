@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技能</title>
+<style>
+:root {
+  --bg: #0b0b14;
+  --surface: #151523;
+  --surface2: #1a1a2c;
+  --border: #232338;
+  --border2: rgba(255,255,255,0.10);
+  --text: #e4e4f0;
+  --text2: #9898b4;
+  --text3: #686888;
+  --accent-1: #a78bfa;
+  --accent-2: #67e8f9;
+  --accent-3: #f472b6;
+  --accent-glow: rgba(167,139,250,0.15);
+  --radius: 8px;
+  --radius-sm: 6px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", system-ui, sans-serif;
+  --mono: "SF Mono", "Cascadia Code", "Fira Code", "JetBrains Mono", Consolas, monospace;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%; background: var(--bg); color: var(--text);
+  font-family: var(--font); font-size: 12px; line-height: 1.5;
+  overflow: hidden; user-select: none; -webkit-user-select: none;
+}
+
+/* Main strip */
+/* Top bar */
+.top-bar {
+  height: 30px; min-height: 30px; width: 100%; display: flex;
+  align-items: center; justify-content: flex-end; padding: 0 8px;
+  background: var(--bg); flex-shrink: 0; gap: 4px; border-bottom: 1px solid var(--border);
+}
+.top-bar .win-btn {
+  width: 28px; height: 22px; border-radius: 4px; border: none;
+  background: transparent; cursor: pointer; color: var(--text3);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 150ms;
+}
+.top-bar .win-btn:hover { background: rgba(255,255,255,0.08); color: var(--text2); }
+.top-bar .win-btn.close:hover { background: #e81123; color: #fff; }
+
+.strip {
+  display: flex; flex-direction: column; align-items: center;
+  width: 48px; padding: 4px 0 6px; gap: 3px;
+  background: var(--bg); border-right: 1px solid var(--border);
+  overflow-y: auto; position: relative; z-index: 10; flex: 1;
+}
+.strip::-webkit-scrollbar { width: 0; }
+
+.strip-logo {
+  width: 30px; height: 30px; border-radius: var(--radius-sm); flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 6px; cursor: pointer;
+  box-shadow: 0 0 12px rgba(167,139,250,0.2);
+}
+.strip-logo svg { width: 15px; height: 15px; color: #fff; }
+
+.strip-btn {
+  width: 36px; height: 36px; border-radius: var(--radius-sm); border: none;
+  background: transparent; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; color: var(--text3); flex-shrink: 0;
+  transition: all 180ms var(--ease-out); position: relative;
+}
+.strip-btn:hover { background: rgba(255,255,255,0.05); color: var(--text2); }
+.strip-btn.active { background: var(--accent-glow); color: var(--accent-1); box-shadow: 0 0 12px var(--accent-glow); }
+.strip-btn.active::after {
+  content: ""; position: absolute; right: 0; top: 10px; bottom: 10px;
+  width: 2px; background: linear-gradient(180deg, var(--accent-1), var(--accent-3));
+  border-radius: 1px 0 0 1px;
+}
+.strip-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+.strip-bottom {
+  margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+
+/* Popup panel - slides out from the strip */
+.popup {
+  position: fixed; left: 52px; top: 0; bottom: 0; width: 290px; z-index: 100;
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 1px solid var(--border2); display: none; flex-direction: column;
+  box-shadow: 8px 0 40px rgba(0,0,0,.5); animation: popupSlide 200ms var(--ease-out);
+  overflow: hidden;
+}
+.popup.show { display: flex; }
+@keyframes popupSlide {
+  from { opacity: 0; transform: translateX(-12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.popup-hd {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,.2); flex-shrink: 0;
+}
+.popup-hd .popup-icon { color: var(--accent-1); display: flex; }
+.popup-hd .popup-icon svg { width: 18px; height: 18px; }
+.popup-hd .popup-title { font-weight: 600; font-size: 13px; flex: 1; }
+.popup-hd .popup-count {
+  font-size: 10px; color: var(--text3); background: rgba(255,255,255,0.04);
+  border-radius: 10px; padding: 1px 8px;
+}
+.popup-hd .popup-close {
+  width: 26px; height: 26px; border-radius: var(--radius-sm); border: none;
+  background: transparent; cursor: pointer; color: var(--text3);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 150ms;
+}
+.popup-hd .popup-close:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+.popup-search {
+  padding: 8px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.popup-search input {
+  width: 100%; padding: 6px 10px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+  color: var(--text); font-size: 11px; font-family: var(--font); outline: none;
+  transition: border-color 180ms;
+}
+.popup-search input::placeholder { color: var(--text3); }
+.popup-search input:focus { border-color: var(--accent-1); }
+
+.popup-body {
+  flex: 1; overflow-y: auto; padding: 8px 10px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.popup-body::-webkit-scrollbar { width: 3px; }
+.popup-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.skill-row {
+  padding: 9px 12px; border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 150ms var(--ease-out); border: 1px solid transparent;
+}
+.skill-row:hover { background: rgba(255,255,255,0.04); border-color: var(--border); }
+.skill-row:active { transform: scale(0.98); transition: 60ms; }
+.skill-row .skill-cmd {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.skill-row .skill-desc { font-size: 10px; color: var(--text2); line-height: 1.4; margin-top: 1px; }
+.skill-row.copied { animation: rowFlash 400ms var(--ease-out); border-color: var(--accent-1); }
+@keyframes rowFlash {
+  0% { background: var(--accent-glow); }
+  100% { background: transparent; }
+}
+.no-match { text-align: center; padding: 20px; color: var(--text3); font-size: 11px; }
+
+/* Toast */
+.toast-wrap {
+  position: fixed; bottom: 16px; left: 50%; z-index: 999;
+  pointer-events: none; display: flex; flex-direction: column; align-items: center;
+}
+.toast {
+  background: rgba(20,20,40,0.9); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 8px 14px; font-size: 11px;
+  color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,.6);
+  animation: toastIn 300ms var(--ease-spring); display: flex; align-items: center;
+  gap: 7px; pointer-events: auto; backdrop-filter: blur(16px);
+}
+.toast svg { color: #34d399; }
+.toast code {
+  background: rgba(255,255,255,0.07); color: var(--accent-1);
+  padding: 2px 6px; border-radius: 3px; font-family: var(--mono); font-size: 10px;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast.out { opacity: 0; transform: translateY(-6px) scale(0.95); transition: all 250ms; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <button class="win-btn close" onclick="window.close()" title="关闭窗口">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+<div class="strip" id="strip">
+  <div class="strip-logo" onclick="closePopup()" title="技能面板">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+  </div>
+  <div class="strip-bottom" id="stripBottom">
+    <button class="strip-btn" onclick="window.open('http://127.0.0.1:8765', '_blank')" title="打开完整面板">
+      <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="popup" id="popup">
+  <div class="popup-hd">
+    <span class="popup-icon" id="popupIcon"></span>
+    <span class="popup-title" id="popupTitle"></span>
+    <span class="popup-count" id="popupCount"></span>
+    <button class="popup-close" onclick="closePopup()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="popup-search">
+    <input type="text" id="popupSearch" placeholder="筛选..." oninput="filterPopup()">
+  </div>
+  <div class="popup-body" id="popupBody"></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+var ICONS = {
+  product: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>',
+  dev: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+  review: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>',
+  debug: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 2 1.88 1.88"/><path d="M14.12 3.88 16 2"/><path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/></svg>',
+  test: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>',
+  design: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="14.5" r="2.5"/><circle cx="8.5" cy="14.5" r="2.5"/><circle cx="6.5" cy="6.5" r="2.5"/></svg>',
+  cloud: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>',
+  database: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>',
+  dataeng: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+  aiml: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/></svg>',
+  sre: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  academic: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg>',
+  devops: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+  research: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  pm: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>',
+  engineering: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.9 20 4.1-4 4.1 4"/><path d="M12 4v12"/><circle cx="12" cy="4" r="2"/><path d="M4.5 20h15"/></svg>',
+  workflow: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  other: '<svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>'
+};
+
+var CATS = [
+  { id:"product", icon:ICONS.product, label:"产品与创意", skills:[
+    {cmd:"/brainstorm",desc:"出主意、想点子、比较方案优劣"},{cmd:"/brainstorming",desc:"把创意一步步整理成设计文档"},{cmd:"/shape-spec",desc:"把模糊想法写成清清楚楚的说明"},{cmd:"/feature-planning",desc:"把功能需求拆成可执行的步骤"},{cmd:"/feature-forge",desc:"结构化需求工作坊，产出EARS格式规格"},{cmd:"/spec-miner",desc:"从代码和对话中自动提取规范文档"},{cmd:"/bmad-prd",desc:"写产品需求文档"},{cmd:"/bmad-product-brief",desc:"写产品简介，把想法说清楚"},{cmd:"/bmad-market-research",desc:"看看市场上有哪些竞争对手"}
+  ]},
+  { id:"dev", icon:ICONS.dev, label:"开发与实现", skills:[
+    {cmd:"/implementation",desc:"直接写代码，少说话多做事"},{cmd:"/bmad-quick-dev",desc:"快速写代码，遵循项目现有风格"},{cmd:"/code-refactor",desc:"批量改名、替换旧写法"},{cmd:"/code-transfer",desc:"把代码从一个文件搬到另一个"},{cmd:"/fullstack-guardian",desc:"全栈安全开发：前端+后端+安全三层"},{cmd:"/graphql-architect",desc:"GraphQL schema设计、Apollo Federation"},{cmd:"/websocket-engineer",desc:"WebSocket实时通信、房间管理、重连"},{cmd:"/playwright-expert",desc:"浏览器端到端测试自动化"},{cmd:"/legacy-modernizer",desc:"遗留代码现代化：重构、迁移、升级"},{cmd:"/mcp-developer",desc:"MCP服务器开发、工具定义、资源管理"},{cmd:"/prototype",desc:"快速构建可抛弃原型验证设计方案"},{cmd:"/llm-integration",desc:"LLM集成：API调用、流式、RAG、Function Calling"},{cmd:"/frontend-excellence",desc:"前端性能：RSC、SSR、Bundle优化"},{cmd:"/technical-doc-creator",desc:"生成带代码块和架构图的技术文档HTML"},{cmd:"/git-pushing",desc:"提交代码并推送到远程仓库"},{cmd:"/git-advanced",desc:"Git高级操作：bisect、worktree、rebase"},{cmd:"/incremental-shipping",desc:"用开关控制功能逐步上线"},{cmd:"/claude-api",desc:"写调用Claude API的代码"}
+  ]},
+  { id:"review", icon:ICONS.review, label:"代码审查", skills:[
+    {cmd:"/review",desc:"检查代码找问题给改进建议"},{cmd:"/code-review",desc:"多角度并行审查代码正确性"},{cmd:"/code-review-loop",desc:"PR审查→反馈→修改的全闭环工作流"},{cmd:"/requesting-code-review",desc:"完成功能后主动请求审查"},{cmd:"/receiving-code-review",desc:"收到审查意见后严谨地逐条处理"},{cmd:"/grill-with-docs",desc:"对照领域模型挑战方案，同步更新文档"},{cmd:"/pr",desc:"自动生成PR描述"},{cmd:"/security-audit",desc:"检查代码安全漏洞"},{cmd:"/audit-dependencies",desc:"检查第三方包有没有漏洞"}
+  ]},
+  { id:"debug", icon:ICONS.debug, label:"调试与修复", skills:[
+    {cmd:"/systematic-debugging",desc:"系统排查bug，不瞎猜"},{cmd:"/diagnose",desc:"规范调试闭环：复现→最小化→假设→插桩→修复→回归"},{cmd:"/investigate-root-cause",desc:"找根因：证据→假设→验证→修复"},{cmd:"/evidence-driven-debugging",desc:"靠数据和日志查bug"},{cmd:"/test-fixing",desc:"修复所有失败的测试"}
+  ]},
+  { id:"test", icon:ICONS.test, label:"测试", skills:[
+    {cmd:"/test",desc:"写测试代码，覆盖各种情况"},{cmd:"/tdd",desc:"强制红→绿→重构循环，垂直切片而非水平"},{cmd:"/test-driven-development",desc:"先写测试再写代码"},{cmd:"/verification-before-completion",desc:"先验证通过再说完工"}
+  ]},
+  { id:"design", icon:ICONS.design, label:"设计与UI", skills:[
+    {cmd:"/ui-ux-design",desc:"设计界面，50+风格可选"},{cmd:"/ui-ux-pro-max",desc:"界面设计全能包"},{cmd:"/ui-styling",desc:"shadcn/ui + Tailwind做漂亮界面"},{cmd:"/design-system",desc:"Design Token三层架构 + 组件规格"},{cmd:"/slides",desc:"做PPT演示文稿"},{cmd:"/dashboard-creator",desc:"做数据看板"},{cmd:"/flowchart-creator",desc:"画流程图"},{cmd:"/timeline-creator",desc:"画时间线和甘特图"},{cmd:"/architecture-diagram-creator",desc:"画系统架构图"},{cmd:"/brand",desc:"定品牌风格和配色"}
+  ]},
+  { id:"cloud", icon:ICONS.cloud, label:"云基础设施", skills:[
+    {cmd:"/cloud-architect",desc:"云架构设计：AWS/Azure/GCP"},{cmd:"/terraform-engineer",desc:"IaC基础设施即代码"},{cmd:"/microservices-architect",desc:"微服务设计：服务边界、通信、治理"}
+  ]},
+  { id:"database", icon:ICONS.database, label:"数据库", skills:[
+    {cmd:"/sql-pro",desc:"SQL优化：EXPLAIN分析、索引、查询重写"},{cmd:"/postgres-pro",desc:"PostgreSQL专家：调优、触发器、扩展"},{cmd:"/database-optimization",desc:"数据库性能：慢查询、索引策略、连接池"}
+  ]},
+  { id:"dataeng", icon:ICONS.dataeng, label:"数据工程", skills:[
+    {cmd:"/docker-compose",desc:"Docker Compose V2"},{cmd:"/flink",desc:"Apache Flink流处理"},{cmd:"/fluss",desc:"Apache Fluss流存储"},{cmd:"/iceberg",desc:"Apache Iceberg表格式"},{cmd:"/iggy",desc:"Iggy流消息平台"},{cmd:"/lance",desc:"Lance列式格式"},{cmd:"/paimon",desc:"Apache Paimon湖格式"}
+  ]},
+  { id:"aiml", icon:ICONS.aiml, label:"AI与机器学习", skills:[
+    {cmd:"/prompt-engineer",desc:"提示词工程"},{cmd:"/rag-architect",desc:"RAG管道设计"},{cmd:"/fine-tuning-expert",desc:"模型微调：LoRA、QLoRA"},{cmd:"/ml-pipeline",desc:"ML管道：训练、评估、部署"}
+  ]},
+  { id:"sre", icon:ICONS.sre, label:"可靠性工程", skills:[
+    {cmd:"/sre-engineer",desc:"SRE实践：SLO、错误预算、OnCall"},{cmd:"/monitoring-expert",desc:"可观测性：指标、追踪、日志"},{cmd:"/chaos-engineer",desc:"混沌工程：故障注入、Game Day"}
+  ]},
+  { id:"academic", icon:ICONS.academic, label:"学术研究", skills:[
+    {cmd:"/academic-paper",desc:"学术论文写作：大纲→初稿→修订→终稿"},{cmd:"/academic-paper-reviewer",desc:"多角色学术审稿"},{cmd:"/academic-pipeline",desc:"10步学术管线"}
+  ]},
+  { id:"devops", icon:ICONS.devops, label:"DevOps与部署", skills:[
+    {cmd:"/devops-automation",desc:"搭CI/CD自动化流水线"},{cmd:"/ci-cd-pipelines",desc:"CI/CD管道：GitHub Actions、GitLab CI"},{cmd:"/docker-best-practices",desc:"Docker镜像打包优化"},{cmd:"/release-and-changelog",desc:"发版本写更新日志"},{cmd:"/kubernetes-operations",desc:"K8s运维：Helm、Operator、排障"}
+  ]},
+  { id:"research", icon:ICONS.research, label:"研究与分析", skills:[
+    {cmd:"/deep-research",desc:"深度研究，结论有来源"},{cmd:"/deep-dive",desc:"DAG驱动深度研究"},{cmd:"/web-research",desc:"上网调研，三种深度模式"},{cmd:"/semantic-search",desc:"自然语言搜索代码位置"},{cmd:"/explain",desc:"解释代码是干什么的"},{cmd:"/map-codebase",desc:"搞清项目代码结构"},{cmd:"/codebase-documenter",desc:"给项目写完整文档"},{cmd:"/zoom-out",desc:"强制从高层全局视角解释代码架构"}
+  ]},
+  { id:"pm", icon:ICONS.pm, label:"项目管理", skills:[
+    {cmd:"/bmad-sprint-planning",desc:"排迭代计划"},{cmd:"/bmad-sprint-status",desc:"看迭代进度"},{cmd:"/bmad-create-epics-and-stories",desc:"大需求拆小任务"},{cmd:"/to-prd",desc:"把对话上下文合成PRD提交为Issue"},{cmd:"/to-issues",desc:"把计划拆成垂直切片的独立Issue"},{cmd:"/triage",desc:"用状态机模型分诊Issue优先级"},{cmd:"/writing-plans",desc:"需求变成可执行计划"},{cmd:"/write-plan",desc:"生成带编号的任务列表"},{cmd:"/plan-review",desc:"审查方案靠不靠谱"},{cmd:"/plan-review-architecture",desc:"架构维度审查"},{cmd:"/plan-review-experience",desc:"体验维度审查：UX+DX"}
+  ]},
+  { id:"engineering", icon:ICONS.engineering, label:"工程规范", skills:[
+    {cmd:"/improve-codebase-architecture",desc:"找架构深化机会"},{cmd:"/git-guardrails-claude-code",desc:"Git危险命令拦截"},{cmd:"/setup-pre-commit",desc:"配置Husky+lint-staged提交前检查"},{cmd:"/atlassian-mcp",desc:"Jira/Confluence集成"},{cmd:"/scaffold-exercises",desc:"创建练习目录结构和模板"},{cmd:"/migrate-to-shoehorn",desc:"TS测试类型断言迁移"},{cmd:"/setup-matt-pocock-skills",desc:"初始化Issue tracker、标签、文档路径"}
+  ]},
+  { id:"workflow", icon:ICONS.workflow, label:"工作流与效率", skills:[
+    {cmd:"/loop",desc:"定时自动重复执行任务"},{cmd:"/grill-me",desc:"让AI像面试官一样追问你的方案"},{cmd:"/handoff",desc:"把当前对话压缩成交接文档"},{cmd:"/write-a-skill",desc:"用规范结构创建新的自定义Skill"},{cmd:"/writing-skills",desc:"创建、编辑、验证Skill的完整指南"},{cmd:"/token-efficient",desc:"简洁模式，少说废话"},{cmd:"/caveman",desc:"超级省字模式"},{cmd:"/caveman-commit",desc:"超压缩commit信息生成"},{cmd:"/caveman-review",desc:"超压缩代码审查意见"},{cmd:"/caveman-compress",desc:"压缩Markdown记忆文件省token"},{cmd:"/caveman-stats",desc:"查看当前会话token用量"},{cmd:"/using-superpowers",desc:"看有哪些技能可用"},{cmd:"/update-config",desc:"改Claude Code配置"},{cmd:"/keybindings-help",desc:"自定义快捷键"},{cmd:"/project-bootstrapper",desc:"从零搭新项目"},{cmd:"/init",desc:"初始化项目配置"},{cmd:"/continuous-learning",desc:"从干活中提取可复用经验"}
+  ]},
+  { id:"other", icon:ICONS.other, label:"其他工具", skills:[
+    {cmd:"/roundtable",desc:"两个AI一起讨论"},{cmd:"/humble-master",desc:"让我说话更像人"},{cmd:"/karpathy-guidelines",desc:"按大佬规范来"},{cmd:"/cavecrew",desc:"调度AI小弟干活"},{cmd:"/dream",desc:"每日回顾"}
+  ]}
+];
+
+// ---- Build strip buttons ----
+var strip = document.getElementById("strip");
+var popup = document.getElementById("popup");
+var popupIcon = document.getElementById("popupIcon");
+var popupTitle = document.getElementById("popupTitle");
+var popupCount = document.getElementById("popupCount");
+var popupBody = document.getElementById("popupBody");
+var popupSearch = document.getElementById("popupSearch");
+var currentCat = null;
+
+CATS.forEach(function(cat) {
+  var btn = document.createElement("button");
+  btn.className = "strip-btn";
+  btn.innerHTML = cat.icon;
+  btn.title = cat.label + "（" + cat.skills.length + "个）";
+  btn.onclick = function(e) { e.stopPropagation(); openPopup(cat); };
+  cat._btn = btn;
+  strip.appendChild(btn);
+});
+
+function openPopup(cat) {
+  CATS.forEach(function(c) { c._btn.classList.remove("active"); });
+  cat._btn.classList.add("active");
+  currentCat = cat;
+  popupIcon.innerHTML = cat.icon;
+  popupTitle.textContent = cat.label;
+  popupCount.textContent = cat.skills.length + "个";
+  popupSearch.value = "";
+  renderPopupSkills(cat.skills);
+  popup.classList.add("show");
+  popupSearch.focus();
+}
+
+function closePopup() {
+  popup.classList.remove("show");
+  CATS.forEach(function(c) { c._btn.classList.remove("active"); });
+  currentCat = null;
+}
+
+function filterPopup() {
+  if (!currentCat) return;
+  var q = popupSearch.value.toLowerCase().trim();
+  renderPopupSkills(q ? currentCat.skills.filter(function(s) { return s.cmd.toLowerCase().indexOf(q) !== -1 || s.desc.indexOf(q) !== -1; }) : currentCat.skills);
+}
+
+function renderPopupSkills(skills) {
+  if (skills.length === 0) {
+    popupBody.innerHTML = '<div class="no-match">没找到匹配的技能</div>';
+    return;
+  }
+  popupBody.innerHTML = skills.map(function(s) {
+    return '<div class="skill-row" data-cmd="' + escAttr(s.cmd) + '" onclick="copySkill(this)"><div class="skill-cmd">' + esc(s.cmd) + '</div><div class="skill-desc">' + esc(s.desc) + '</div></div>';
+  }).join("");
+}
+
+function copySkill(row) {
+  var cmd = row.dataset.cmd;
+  row.classList.add("copied");
+  setTimeout(function() { row.classList.remove("copied"); }, 400);
+  navigator.clipboard.writeText(cmd).then(function() { showToast(cmd); }).catch(function() { showToast(cmd); });
+}
+
+// ---- Toast ----
+function showToast(cmd) {
+  var wrap = document.getElementById("toastWrap");
+  var toast = document.createElement("div");
+  toast.className = "toast";
+  toast.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 已复制 <code>' + esc(cmd) + '</code>';
+  wrap.appendChild(toast);
+  var timer = setTimeout(function() {
+    toast.classList.add("out");
+    setTimeout(function() { toast.remove(); }, 250);
+  }, 2000);
+  toast._timer = timer;
+}
+
+// ---- Keyboard ----
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") { closePopup(); }
+});
+
+// ---- Helpers ----
+function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function escAttr(s) { return s.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+</script>
+</body>
+</html>
