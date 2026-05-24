@@ -1,4 +1,4 @@
-# Compendium &mdash; Skills Panel for Claude Code
+# Clavis &mdash; The Key to Your Claude Code Skills
 
 A gallery-grade, warm-gold-on-obsidian skills panel that turns your Claude Code skill library into a browsable, searchable, organized experience.
 
@@ -34,8 +34,8 @@ A gallery-grade, warm-gold-on-obsidian skills panel that turns your Claude Code 
 ### One-Command Start
 
 ```bash
-git clone https://github.com/NUYoah700/compendium-app.git
-cd compendium-app
+git clone https://github.com/NUYoah700/clavis.git
+cd clavis
 python3 server.py
 ```
 
@@ -52,7 +52,7 @@ Add this to your `~/.claude/settings.json` hooks to auto-start Compendium with e
       {
         "hooks": [
           {
-            "command": "cd /path/to/compendium-app && pythonw.exe server.py &",
+            "command": "cd /path/to/clavis && pythonw.exe server.py &",
             "type": "command"
           }
         ],
@@ -133,7 +133,7 @@ Click the **popout** icon (rightmost in header) to launch a detached 48px wide i
 ## Architecture
 
 ```
-compendium-app/
+clavis/
   server.py        # Python HTTP server + REST API (port 8765)
   index.html       # Main panel UI — vanilla HTML/CSS/JS, zero npm, zero frameworks
   vertical.html    # Standalone vertical launcher window
