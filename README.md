@@ -3,7 +3,12 @@
 A gallery-grade, warm-gold-on-obsidian skills panel that turns your Claude Code skill library into a browsable, searchable, organized experience.
 
 <p align="center">
-  <img src="https://via.placeholder.com/800x450/1a1816/c9a96e?text=Compendium+Screenshot" alt="Compendium Screenshot" width="800">
+  <img src="clavis-main.png" alt="Clavis Main Panel" width="800">
+</p>
+
+<p align="center">
+  <img src="clavis-spotlight.png" alt="Clavis Spotlight Search" width="400">
+  <img src="clavis-compact.png" alt="Clavis Compact Mode" width="400">
 </p>
 
 ---
